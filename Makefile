@@ -1,4 +1,4 @@
-led.bin: start.o 
+led.bin: led.o 
 	arm-linux-ld -Ttext 0x0 -o led.elf $^
 	arm-linux-objcopy -O binary led.elf led.bin
 	arm-linux-objdump -D led.elf > led_elf.dis
