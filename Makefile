@@ -1,4 +1,4 @@
-led.bin: led.o 
+led.bin: start.o led.o
 	arm-linux-ld -Ttext 0x0 -o led.elf $^
 	arm-linux-objcopy -O binary led.elf led.bin
 	arm-linux-objdump -D led.elf > led_elf.dis
@@ -6,10 +6,10 @@ led.bin: led.o
 	./mkx210 led.bin 210.bin
 	
 %.o : %.S
-	arm-linux-gcc -o $@ $< -c
+	arm-linux-gcc -o $@ $< -c -nostdlib
 
 %.o : %.c
-	arm-linux-gcc -o $@ $< -c 
+	arm-linux-gcc -o $@ $< -c -nostdlib
 
 clean:
 	rm *.o *.elf *.bin *.dis mkx210 -f
