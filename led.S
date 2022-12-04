@@ -1,15 +1,25 @@
 /*
  * 文件名: led.S
  * 作者: 罗凯杰
- * 描述: 流水灯 
+ * 描述: 演示汇编关闭看门狗  
  */
 
 #define GPJ0CON 0xE0200240
 #define GPJ0DAT 0xE0200244 
 
+#define WTCON   0xE2700000
+
 .global _start  //解决 make 编译警告: arm-linux-ld: warning: cannot find entry symbol _start; defaulting to 00000000
                 // 把 _start 链接属性改为外部，这样其他文件就可以看见 _start 了
 _start:
+	//第 1 步,关看门狗(向 WTCON 的 bit5 写入 0 即可)
+	ldr r0, =WTCON
+	ldr r1, =0x0
+	str r1, [r0]
+	
+	
+
+	//之后的为功能代码
 	//第一步: 把所有引脚设置成输出模式 
 	ldr r0, =0x11111111     //从后面的 = 可以看出用的是 ldr 伪指令，因为需要编译器来判断这个数
 	ldr r1, =GPJ0CON        //是合法立即数还是非法立即数，一般写代码都用 ldr 伪指令
