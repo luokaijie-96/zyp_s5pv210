@@ -1,13 +1,15 @@
 /*
  * 文件名: led.S
  * 作者: 罗凯杰
- * 描述: 演示汇编关闭看门狗  
+ * 描述: 演示汇编设置栈
  */
 
-#define GPJ0CON 0xE0200240
-#define GPJ0DAT 0xE0200244 
+#define GPJ0CON     0xE0200240
+#define GPJ0DAT     0xE0200244 
 
-#define WTCON   0xE2700000
+#define WTCON       0xE2700000
+
+#define SVC_STACK   0xD0037D80  //满减栈
 
 .global _start  //解决 make 编译警告: arm-linux-ld: warning: cannot find entry symbol _start; defaulting to 00000000
                 // 把 _start 链接属性改为外部，这样其他文件就可以看见 _start 了
@@ -16,8 +18,12 @@ _start:
 	ldr r0, =WTCON
 	ldr r1, =0x0
 	str r1, [r0]
+
 	
-	
+	//第 2 步, 设置 SVC 栈(复位之后, 自动进入 SVC 模式)
+	ldr sp, =SVC_STACK
+
+	//从这里之后, 就可以开始调用 C 程序了
 
 	//之后的为功能代码
 	//第一步: 把所有引脚设置成输出模式 
