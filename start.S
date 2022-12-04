@@ -1,7 +1,7 @@
 /*
  * 文件名: led.S
  * 作者: 罗凯杰
- * 描述: 演示汇编设置栈并且调用 C 语言程序来点亮 LED 
+ * 描述: 演示汇编开关 icache
  */
 
 
@@ -20,6 +20,14 @@ _start:
 	
 	//第 2 步, 设置 SVC 栈(复位之后, 自动进入 SVC 模式)
 	ldr sp, =SVC_STACK
+
+
+	//第 3 步, 开/关 icache
+	mrc p15, 0, r0, c1, c0, 0;    // 读出 cp15 的 c1 到 r0 中
+	bic r0, r0, #(1 << 12)        // bit 12 置0 关 icache
+	orr r0, r0, #(1 << 12)        // bit 12 置1 开 icache
+	mcr p15, 0, r0, c1, c0, 0;
+
 
 	//从这里之后, 就可以开始调用 C 程序了
         bl  led_blink
