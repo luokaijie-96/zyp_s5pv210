@@ -1,5 +1,5 @@
 led.bin: start.o led.o
-	arm-linux-ld -Ttext 0x0 -o led.elf $^
+	arm-linux-ld -Tlink.lds  -o led.elf $^
 	arm-linux-objcopy -O binary led.elf led.bin
 	arm-linux-objdump -D led.elf > led_elf.dis
 	gcc mkv210_image.c -o mkx210
