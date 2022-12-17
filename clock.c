@@ -46,42 +46,54 @@
 #define MPLL_VAL			set_pll(MPLL_MDIV,MPLL_PDIV,MPLL_SDIV)
 
 
-.global clock_init
-clock_init:
-	ldr	r0, =ELFIN_CLOCK_POWER_BASE
-	
-	// 1 设置各种时钟开关，暂时不使用PLL
-	ldr	r1, =0x0
-	// 芯片手册P378 寄存器CLK_SRC：Select clock source 0 (Main)
-	str	r1, [r0, #CLK_SRC0_OFFSET]				
+#define REG_CLK_SRC0	(ELFIN_CLOCK_POWER_BASE + CLK_SRC0_OFFSET)
+#define REG_APLL_LOCK	(ELFIN_CLOCK_POWER_BASE + APLL_LOCK_OFFSET)
+#define REG_MPLL_LOCK	(ELFIN_CLOCK_POWER_BASE + MPLL_LOCK_OFFSET)
+#define REG_CLK_DIV0	(ELFIN_CLOCK_POWER_BASE + CLK_DIV0_OFFSET)
+#define REG_APLL_CON0	(ELFIN_CLOCK_POWER_BASE + APLL_CON0_OFFSET)
+#define REG_MPLL_CON	(ELFIN_CLOCK_POWER_BASE + MPLL_CON_OFFSET)
 
+#define rREG_CLK_SRC0	(*(volatile unsigned int *)REG_CLK_SRC0)
+#define rREG_APLL_LOCK	(*(volatile unsigned int *)REG_APLL_LOCK)
+#define rREG_MPLL_LOCK	(*(volatile unsigned int *)REG_MPLL_LOCK)
+#define rREG_CLK_DIV0	(*(volatile unsigned int *)REG_CLK_DIV0)
+#define rREG_APLL_CON0	(*(volatile unsigned int *)REG_APLL_CON0)
+#define rREG_MPLL_CON	(*(volatile unsigned int *)REG_MPLL_CON)
+
+
+void clock_init(void)
+{
+	// 1 设置各种时钟开关，暂时不使用PLL
+	rREG_CLK_SRC0 = 0x0;
+	
 	// 2 设置锁定时间，使用默认值即可
 	// 设置PLL后，时钟从Fin提升到目标频率时，需要一定的时间，即锁定时间
-	ldr	r1,	=0x0000FFFF					
-	str	r1,	[r0, #APLL_LOCK_OFFSET]				
-	str r1, [r0, #MPLL_LOCK_OFFSET]	 				
-
+	rREG_APLL_LOCK = 0x0000ffff;
+	rREG_MPLL_LOCK = 0x0000ffff;
+	
 	// 3 设置分频
 	// 清bit[0~31]
-	ldr r1, [r0, #CLK_DIV0_OFFSET]					
-	ldr	r2, =CLK_DIV0_MASK					
-	bic	r1, r1, r2
-	ldr	r2, =0x14131440						
-	orr	r1, r1, r2
-	str	r1, [r0, #CLK_DIV0_OFFSET]
-
+	rREG_CLK_DIV0 = 0x14131440;
+	
 	// 4 设置PLL
 	// FOUT = MDIV*FIN/(PDIV*2^(SDIV-1))=0x7d*24/(0x3*2^(1-1))=1000 MHz
-	ldr	r1, =APLL_VAL						
-	str	r1, [r0, #APLL_CON0_OFFSET]
+	rREG_APLL_CON0 = APLL_VAL;
 	// FOUT = MDIV*FIN/(PDIV*2^SDIV)=0x29b*24/(0xc*2^1)= 667 MHz
-	ldr	r1, =MPLL_VAL						
-	str	r1, [r0, #MPLL_CON_OFFSET]
-
+	rREG_MPLL_CON = MPLL_VAL;
+	
 	// 5 设置各种时钟开关,使用PLL
-	ldr	r1, [r0, #CLK_SRC0_OFFSET]
-	ldr	r2, =0x10001111
-	orr	r1, r1, r2
-	str	r1, [r0, #CLK_SRC0_OFFSET]
+	rREG_CLK_SRC0 = 0x10001111;
+}
 
-	mov	pc, lr
+
+
+
+
+
+
+
+
+
+
+
+
