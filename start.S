@@ -1,7 +1,7 @@
 /*
  * 文件名: led.S
  * 作者: 罗凯杰
- * 描述: 演示汇编开关 icache
+ * 描述: 演示汇编初始化时钟系统
  */
 
 
@@ -17,12 +17,14 @@ _start:
 	ldr r1, =0x0
 	str r1, [r0]
 
+	// 第2步：初始化时钟
+	bl clock_init
 	
-	//第 2 步, 设置 SVC 栈(复位之后, 自动进入 SVC 模式)
+	//第 3 步, 设置 SVC 栈(复位之后, 自动进入 SVC 模式)
 	ldr sp, =SVC_STACK
 
 
-	//第 3 步, 开/关 icache
+	//第 4 步, 开/关 icache
 	mrc p15, 0, r0, c1, c0, 0;    // 读出 cp15 的 c1 到 r0 中
 	bic r0, r0, #(1 << 12)        // bit 12 置0 关 icache
 	orr r0, r0, #(1 << 12)        // bit 12 置1 开 icache
