@@ -1,9 +1,9 @@
-led.bin: start.o led.o clock.o
-	arm-linux-ld -Ttext 0x0 -o led.elf $^
-	arm-linux-objcopy -O binary led.elf led.bin
-	arm-linux-objdump -D led.elf > led_elf.dis
+uart.bin: start.o led.o clock.o uart.o main.o
+	arm-linux-ld -Ttext 0x0 -o uart.elf $^
+	arm-linux-objcopy -O binary uart.elf uart.bin
+	arm-linux-objdump -D uart.elf > uart_elf.dis
 	gcc mkv210_image.c -o mkx210
-	./mkx210 led.bin 210.bin
+	./mkx210 uart.bin 210.bin
 	
 %.o : %.S
 	arm-linux-gcc -o $@ $< -c -nostdlib
