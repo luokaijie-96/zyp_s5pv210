@@ -69,7 +69,7 @@ void uart_init(void)
     rUCON0 = UCON0_FUNC_CLOCK_SELECTION_PLCK | UCON0_FUNC_LOOPBACK_MODE_NORMAL | UCON0_FUNC_TX_MODE_POLLING | UCON0_FUNC_RX_MODE_POLLING;
     rUMCON0 = 0;
     rUFCON0 = UFCON0_FUNC_FIFO_DISABLE;
-
+#if 0
     //波特率设置  DIV_VAL = (PCLK / (bps X 16) ) - 1
     //PCLK_PSYS 用 66MHz 算  DIV_VAL = (66 X 10^6 / (115200 X 16)) - 1 = 34.807
     //小数是 0.8，0.8 x 16 = 12.8
@@ -77,6 +77,14 @@ void uart_init(void)
     //12 0xDDDD(1101_1101_1101_1101b)
     //13 0xDFDD(1101_1111_1101_1101b)
     rUDIVSLOT0 =  0xDDDD;
+#endif
+
+    //PCLK_PSYS 用 66.7MHz 算  DIV_VAL = (66.7 X 10^6 / (115200 X 16)) - 1 = 35.187
+    //小数是 0.18，0.18 x 16 = 2.88
+    rUBRDIV0 = 35;
+    //2 0x0808(0000_1000_0000_1000b)
+    //3 0x0888(0000_1000_1000_1000b)
+    rUDIVSLOT0 =  0x0808;
 }
 
 //串口接收程序，轮询方式，接收一个字节
