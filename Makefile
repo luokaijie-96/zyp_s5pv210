@@ -18,7 +18,7 @@ objs := start.o led.o clock.o uart.o main.o
 objs += lib/libc.a
 
 uart.bin: $(objs)
-	$(LD) -Ttext 0x0 -o uart.elf $^
+	$(LD) -Tlink.lds -o uart.elf $^
 	$(OBJCOPY) -O binary uart.elf uart.bin
 	$(OBJDUMP) -D uart.elf > uart_elf.dis
 	gcc mkv210_image.c -o mkx210
