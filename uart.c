@@ -94,13 +94,13 @@ void uart_putc(char c)
     //因为串口控制器发送 1 个字节的速度远远低于 CPU 的速度，所以 CPU 发送1个字节前必须
     //确认串口控制器当前缓冲区是空的（意思就是串口已经发完了上一个字节）
     //如果缓冲区非空则位为0，此时应该循环，直到位为1
-    while (rUTRSTAT0 & (BIT_LOCATION_UTRSTAT0_FUNC_TRANSMITTER_EMPTY) != UTRSTAT0_FUNC_TRANSMITTER_EMPTY) ;
+    while ((rUTRSTAT0 & BIT_LOCATION_UTRSTAT0_FUNC_TRANSMITTER_EMPTY) != UTRSTAT0_FUNC_TRANSMITTER_EMPTY) ;
     rUTXH0 = c;
 }
 
 //串口接收程序，轮询方式，接收一个字节
 char uart_getc(void)
 {
-    while ( rUTRSTAT0 & BIT_LOCATION_UTRSTAT0_FUNC_RECEIVE_BUFFER_DATA_READY != UTRSTAT0_FUNC_RECEIVE_BUFFER_DATA_READY) ;
+    while ((rUTRSTAT0 & BIT_LOCATION_UTRSTAT0_FUNC_RECEIVE_BUFFER_DATA_READY) != UTRSTAT0_FUNC_RECEIVE_BUFFER_DATA_READY) ;
     return  rURXH0 & 0xff;
 }
