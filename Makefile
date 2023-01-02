@@ -14,15 +14,15 @@ CFLAGS		:= -Wall -O2 -fno-builtin
 export CC LD OBJCOPY OBJDUMP AR CPPFLAGS CFLAGS
 
 
-objs := start.o led.o clock.o uart.o main.o 
+objs := start.o led.o clock.o uart.o main.o key.o 
 objs += lib/libc.a
 
-uart.bin: $(objs)
-	$(LD) -Tlink.lds -o uart.elf $^
-	$(OBJCOPY) -O binary uart.elf uart.bin
-	$(OBJDUMP) -D uart.elf > uart_elf.dis
+key.bin: $(objs)
+	$(LD) -Tlink.lds -o key.elf $^
+	$(OBJCOPY) -O binary key.elf key.bin
+	$(OBJDUMP) -D key.elf > key_elf.dis
 	gcc mkv210_image.c -o mkx210
-	./mkx210 uart.bin 210.bin
+	./mkx210 key.bin 210.bin
 
 lib/libc.a:
 	cd lib;	make;	cd ..

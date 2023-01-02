@@ -4,17 +4,15 @@ void uart_init(void);
 
 int main(void)
 {
-	uart_init();
-	
-	int a = 12345678;
-	putc('a');
-	putc('b');
-	putc('c');
-	while (1)
-	{
-		printf("test for printf, a = %d.\n", a);
-	}
-	
+    uart_init();
+    key_init();	
+
+    printf("test uart ok!\r\n");
+
+    while(1)
+    {
+	key_polling();
+    }
 	/*
 	while(1)
 	{
