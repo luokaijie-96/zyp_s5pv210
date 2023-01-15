@@ -8,10 +8,22 @@ void uart_init(void);
 #define  KEY_EINT3        NUM_EINT3      //down
 #define  KEY_EINT16_19    NUM_EINT16_31  // 其余 4 个共用的
 
-
+#define  KEY_INTERRUPT    0
 
 int main(void)
 {
+    uart_init();
+
+    timer2_pwm_init();
+
+    while(1)
+    {
+	printf("A\r\n");
+	delay_seconds(1);
+    }
+
+
+#if KEY_INTERRUPT	
     uart_init();
     //key_init();	
     //key 外部中断寄存器初始化
@@ -50,6 +62,7 @@ int main(void)
         }
         delay_seconds(1);
     }
+#endif
  
 	/*
 	while(1)
