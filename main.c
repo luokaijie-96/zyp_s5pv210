@@ -2,6 +2,7 @@
 #include "init.h"
 #include "main.h"
 #include "wdt.h"
+#include "rtc.h"
 
 void uart_init(void);
 
@@ -11,9 +12,55 @@ void uart_init(void);
 
 #define  KEY_INTERRUPT    0
 #define  PWM_TIMER2       0
+#define  WDT_FUNC         0
 
 int main(void)
 {
+    uart_init();
+    printf("-------- rtc write time test ---------\r\n");
+    struct rtc_time tWrite = 
+    {   
+        .year = 2023,
+	.month = 1,
+	.date = 16,
+	.hour = 14,
+	.minute = 22,
+	.second = 8,
+	.day = 1,
+    };
+
+    rtc_set_time(&tWrite);
+
+
+    //printf("-------- rtc read time test ---------\r\n");
+    //struct rtc_time  tRead;
+    //while (1)
+    //{
+    //    rtc_get_time(&tRead);
+    //    printf("The time read is: %d-%d-%d %d:%d:%d %d\r\n", tRead.year, tRead.month,
+    //    		    tRead.date, tRead.hour, tRead.minute, tRead.second, tRead.day);
+
+    //    delay_seconds(1);
+    //}
+    
+    system_init_exception();
+    rtc_set_alarm();
+
+    intc_setVectaddr(NUM_RTC_ALARM, isr_rtc_alarm);
+    intc_enable(NUM_RTC_ALARM);
+
+    struct rtc_time  tRead;
+    while (1)
+    {
+        rtc_get_time(&tRead);
+        printf("The time read is: %d-%d-%d %d:%d:%d %d\r\n", tRead.year, tRead.month,
+        		    tRead.date, tRead.hour, tRead.minute, tRead.second, tRead.day);
+
+        delay_seconds(1);
+    }
+
+
+#if WDT_FUNC
     uart_init();
     wdt_init_interrupt();
 
@@ -35,7 +82,7 @@ int main(void)
 	printf("A, pow(10,5)=%d\r\n", pow(10,5));
 	delay_seconds(1);
     }
-
+#endif
 
 #if PWM_TIMER2
     uart_init();
