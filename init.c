@@ -27,13 +27,13 @@ void data_exception(void)
 void system_init_exception(void)
 {
     //第一阶段处理, 绑定异常向量表
-    r_exception_reset = reset_exception;
-    r_exception_undef = undef_exception;
-    r_exception_soft_init = soft_init_exception;
-    r_exception_prefetch = prefetch_exception;
-    r_exception_data = data_exception;
-    r_exception_irq = IRQ_handle;
-    r_exception_fiq = IRQ_handle;
+    r_exception_reset =      (unsigned int)reset_exception;
+    r_exception_undef =      (unsigned int)undef_exception;
+    r_exception_soft_init =  (unsigned int)soft_init_exception;
+    r_exception_prefetch =   (unsigned int)prefetch_exception;
+    r_exception_data =       (unsigned int)data_exception;
+    r_exception_irq =        (unsigned int)IRQ_handle;
+    r_exception_fiq =        (unsigned int)IRQ_handle;
 
     //初始化中断控制器的基本寄存器
     intc_init();
@@ -89,19 +89,19 @@ void intc_setVectaddr(unsigned long intNum, void (*handler)(void))
     //VIC0
     if (intNum < 32)
     {
-	*( (volatile unsigned long *)(VIC0VECTADDR + (4 * (intNum - 0)))) = handler;
+	*( (volatile unsigned long *)(VIC0VECTADDR + (4 * (intNum - 0)))) =  (unsigned long)handler;
     }
     else if (intNum < 64) // VIC1
     {
-	*( (volatile unsigned long *)(VIC1VECTADDR + (4 * (intNum - 32)))) = handler;
+	*( (volatile unsigned long *)(VIC1VECTADDR + (4 * (intNum - 32)))) = (unsigned long)handler;
     }
     else if (intNum < 96) // VIC2
     {
-	*( (volatile unsigned long *)(VIC2VECTADDR + (4 * (intNum - 64)))) = handler;
+	*( (volatile unsigned long *)(VIC2VECTADDR + (4 * (intNum - 64)))) = (unsigned long)handler;
     }
     else //VIC3
     {
-	*( (volatile unsigned long *)(VIC3VECTADDR + (4 * (intNum - 96)))) = handler;
+	*( (volatile unsigned long *)(VIC3VECTADDR + (4 * (intNum - 96)))) = (unsigned long)handler;
     }
 }
 

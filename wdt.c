@@ -45,6 +45,7 @@ unsigned int pow(unsigned int base, unsigned int exponent)
 #define         WTCON_FUNC_CLOCK_SELECT_64             (0b10 << 3)
 #define         WTCON_FUNC_CLOCK_SELECT_128            (0b11 << 3)
 
+#define         BIT_LOCATION_WTCON_INTERRUPT           (0b1  << 2)
 #define         WTCON_FUNC_INTERRUPT_GENERATION_ENABLE (0x1  << 2)
 #define         WTCON_FUNC_INTERRUPT_GENERATION_DISABLE (0x0 << 2)
 
@@ -65,10 +66,11 @@ void wdt_init_interrupt(void)
     rWTCON |= (WTCON_FUNC_CLOCK_SELECT_128);  // 1/128 MHZ, T = 128us
 
     //第二步，设置中断和复位信号的使能或禁止
-    rWTCON |= (WTCON_FUNC_INTERRUPT_GENERATION_ENABLE); // enable wdt interrupt
+    rWTCON &= ~(BIT_LOCATION_WTCON_INTERRUPT); 
+    rWTCON |= (WTCON_FUNC_INTERRUPT_GENERATION_DISABLE); // disable wdt interrupt
 
     rWTCON &= ~(BIT_LOCATION_WTCON_RESET);  
-    rWTCON |= (WTCON_FUNC_RESET_DISABLE);   //disable wdt reset
+    rWTCON |= (WTCON_FUNC_RESET_ENABLE);   //enable wdt reset
 
     //第三步，设置定时时间
     //WDT 定时计数个数，最终定时时间为这里的值 x 时钟周期
