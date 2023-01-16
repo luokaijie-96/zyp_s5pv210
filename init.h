@@ -1,7 +1,7 @@
 #ifndef  __INIT_H__
 #define  __INIT_H__
 
-#if 0
+#if  1 
 void reset_exception(void);
 void undef_exception(void);
 void soft_init_exception(void);
@@ -16,7 +16,8 @@ void intc_disable(unsigned long intNum);
 unsigned long intc_getVICirqstatus(unsigned long ucontroller);
 void irq_handler(void);
 void IRQ_handle(void);
-#endif
+
+#else
 
 void intc_init(void);
 void intc_enable(unsigned long intnum);
@@ -27,7 +28,7 @@ unsigned long intc_getvicirqstatus(unsigned long ucontroller);
 void irq_handler(void);
 void IRQ_handle(void);
 void system_init_exception(void);
-
+#endif
 
 //Interrupt
 #define  VIC0_BASE                       (0xF2000000)

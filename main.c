@@ -1,6 +1,7 @@
 #include "stdio.h"
 #include "init.h"
 #include "main.h"
+#include "wdt.h"
 
 void uart_init(void);
 
@@ -9,9 +10,34 @@ void uart_init(void);
 #define  KEY_EINT16_19    NUM_EINT16_31  // 其余 4 个共用的
 
 #define  KEY_INTERRUPT    0
+#define  PWM_TIMER2       0
 
 int main(void)
 {
+    uart_init();
+    wdt_init_interrupt();
+
+
+    //如果程序要使用中断,就要调用中断初始化来初步初始化中断控制器
+    system_init_exception();
+
+    printf("---------- wdt interrupt -----------\r\n");
+
+    //绑定 isr 到中断控制器硬件
+    intc_setVectaddr(NUM_WDT, isr_wdt);
+
+    //使能中断
+    intc_enable(NUM_WDT);
+
+
+    while(1)
+    {
+	printf("A, pow(10,5)=%d\r\n", pow(10,5));
+	delay_seconds(1);
+    }
+
+
+#if PWM_TIMER2
     uart_init();
 
     timer2_pwm_init();
@@ -21,7 +47,7 @@ int main(void)
 	printf("A\r\n");
 	delay_seconds(1);
     }
-
+#endif
 
 #if KEY_INTERRUPT	
     uart_init();
