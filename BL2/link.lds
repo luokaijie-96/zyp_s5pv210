@@ -1,10 +1,9 @@
 SECTIONS
 {
-	. = 0x20000000;
+	. = 0x23E00000;
 	
 	.text : {
 		start.o
-		sdram_init.o
 		* (.text)
 	}
     		
