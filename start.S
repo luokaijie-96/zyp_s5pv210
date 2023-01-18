@@ -16,6 +16,13 @@
 
                 // 把 _start 链接属性改为外部，这样其他文件就可以看见 _start 了
 _start:
+        //第0步：开发板置锁
+        ldr r0, =0xe010e81c
+        ldr r1, [r0]
+        orr r1, r1, #0x300
+        orr r1, r1, #0x1
+        str r1, [r0]        
+
 	//第 1 步,关看门狗(向 WTCON 的 bit5 写入 0 即可)
 	ldr r0, =WTCON
 	ldr r1, =0x0
