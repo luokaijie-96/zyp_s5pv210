@@ -20,4 +20,8 @@ void uart_init(void);
 //pwm.c
 void timer2_pwm_init(void);
 
+
+//adc.c
+void adc_test(void);
+
 #endif

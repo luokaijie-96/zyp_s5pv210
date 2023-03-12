@@ -13,9 +13,23 @@ void uart_init(void);
 #define  KEY_INTERRUPT    0
 #define  PWM_TIMER2       0
 #define  WDT_FUNC         0
+#define  RTC_FUNC         0
 
 int main(void)
 {
+
+    uart_init();
+    printf("-------- adc test ---------\r\n");
+    adc_test();
+
+
+    while (1) ;
+
+    return 0;
+
+
+
+#if RTC_FUNC	
     uart_init();
     printf("-------- rtc write time test ---------\r\n");
     struct rtc_time tWrite = 
@@ -58,6 +72,7 @@ int main(void)
 
         delay_seconds(1);
     }
+#endif    
 
 
 #if WDT_FUNC
