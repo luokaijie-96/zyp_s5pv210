@@ -18,7 +18,7 @@
 static void delay(void)
 {
     volatile unsigned int i, j;
-    for (i=0; i < 8000; i++)
+    for (i=0; i < 4000; i++)
 	for (j=0; j < 1000; j++);
 }
 
@@ -33,12 +33,9 @@ static void adc_init()
 
     rTSADCCON0 &= ~(0x1 << 2);   // normal operation mode
 
-    rTSADCCON0 &= ~(0x1 << 1);   // disable  start by read mode
-
-
+    rTSADCCON0 |= (0x1 << 1);    // enable  start by read mode
 
     rADCMUX    &= ~(0xF << 0);   // MUX 选择 ADCIN0
-
 }
 
 
@@ -49,11 +46,14 @@ void adc_test(void)
     int val = 0;
     adc_init();	
 
+    //先启动一次读操作,开启 ADC 转换.注意,此次的数据是无效数据
+    val = rTSDATX0;
+
     while(1)
     {
 
         //第一步,人为手工开启ADC 转换
-	rTSADCCON0 |= (0x1 << 0);  
+	//rTSADCCON0 |= (0x1 << 0);  
 	
 	//第二步,等待ADC 转换完毕
 	while (!(rTSADCCON0 & (0x1 << 15))) ;
