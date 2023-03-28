@@ -194,12 +194,195 @@ static void delay(void)
 		for (j=0; j<100; j++);
 }
 
+
+// 绘制横线，起始坐标为(x1, y)到(x2, y),颜色是color
+static void lcd_draw_hline(u32 x1, u32 x2, u32 y, u32 color)
+{
+	u32 x;
+	
+	for (x = x1; x<x2; x++)
+	{
+		lcd_draw_pixel(x, y, color);
+	}
+}
+
+// 绘制竖线，起始坐标为(x, y1)到(x, y2),颜色是color
+static void lcd_draw_vline(u32 x, u32 y1, u32 y2, u32 color)
+{
+	u32 y;
+	
+	for (y = y1; y<y2; y++)
+	{
+		lcd_draw_pixel(x, y, color);
+	}
+}
+
+// glib库中的画线函数，可以画斜线，线两端分别是(x1, y1)和(x2, y2)
+void glib_line(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2, unsigned int color)
+{
+	int dx,dy,e;
+	dx=x2-x1; 
+	dy=y2-y1;
+    
+	if(dx>=0)
+	{
+		if(dy >= 0) // dy>=0
+		{
+			if(dx>=dy) // 1/8 octant
+			{
+				e=dy-dx/2;  
+				while(x1<=x2)
+				{
+					lcd_draw_pixel(x1,y1,color);
+					if(e>0){y1+=1;e-=dx;}	
+					x1+=1;
+					e+=dy;
+				}
+			}
+			else		// 2/8 octant
+			{
+				e=dx-dy/2;
+				while(y1<=y2)
+				{
+					lcd_draw_pixel(x1,y1,color);
+					if(e>0){x1+=1;e-=dy;}	
+					y1+=1;
+					e+=dx;
+				}
+			}
+		}
+		else		   // dy<0
+		{
+			dy=-dy;   // dy=abs(dy)
+
+			if(dx>=dy) // 8/8 octant
+			{
+				e=dy-dx/2;
+				while(x1<=x2)
+				{
+					lcd_draw_pixel(x1,y1,color);
+					if(e>0){y1-=1;e-=dx;}	
+					x1+=1;
+					e+=dy;
+				}
+			}
+			else	 // 7/8 octant
+			{
+				e=dx-dy/2;
+				while(y1>=y2)
+				{
+					lcd_draw_pixel(x1,y1,color);
+					if(e>0){x1+=1;e-=dy;}	
+					y1-=1;
+					e+=dx;
+				}
+			}
+		}	
+	}
+	else //dx<0
+	{
+		dx=-dx;		//dx=abs(dx)
+		if(dy >= 0) // dy>=0
+		{
+			if(dx>=dy) // 4/8 octant
+			{
+				e=dy-dx/2;
+				while(x1>=x2)
+				{
+					lcd_draw_pixel(x1,y1,color);
+					if(e>0){y1+=1;e-=dx;}	
+					x1-=1;
+					e+=dy;
+				}
+			}
+			else		// 3/8 octant
+			{
+				e=dx-dy/2;
+				while(y1<=y2)
+				{
+					lcd_draw_pixel(x1,y1,color);
+					if(e>0){x1-=1;e-=dy;}	
+					y1+=1;
+					e+=dx;
+				}
+			}
+		}
+		else		   // dy<0
+		{
+			dy=-dy;   // dy=abs(dy)
+
+			if(dx>=dy) // 5/8 octant
+			{
+				e=dy-dx/2;
+				while(x1>=x2)
+				{
+					lcd_draw_pixel(x1,y1,color);
+					if(e>0){y1-=1;e-=dx;}	
+					x1-=1;
+					e+=dy;
+				}
+			}
+			else		// 6/8 octant
+			{
+				e=dx-dy/2;
+				while(y1>=y2)
+				{
+					lcd_draw_pixel(x1,y1,color);
+					if(e>0){x1-=1;e-=dy;}	
+					y1-=1;
+					e+=dx;
+				}
+			}
+		}	
+	}
+}
+
+//画圆函数，圆心坐标是(centerX, centerY)，半径是radius，圆的颜色是color
+void draw_circular(unsigned int centerX, unsigned int centerY, unsigned int radius, unsigned int color)
+{
+	int x,y ;
+	int tempX,tempY;;
+    int SquareOfR = radius*radius;
+
+	for(y=0; y<XSIZE; y++)
+	{
+		for(x=0; x<YSIZE; x++)
+		{
+			if(y<=centerY && x<=centerX)
+			{
+				tempY=centerY-y;
+				tempX=centerX-x;                        
+			}
+			else if(y<=centerY&& x>=centerX)
+			{
+				tempY=centerY-y;
+				tempX=x-centerX;                        
+			}
+			else if(y>=centerY&& x<=centerX)
+			{
+				tempY=y-centerY;
+				tempX=centerX-x;                        
+			}
+			else
+			{
+				tempY = y-centerY;
+				tempX = x-centerX;
+			}
+			if ((tempY*tempY+tempX*tempX)<=SquareOfR)
+				lcd_draw_pixel(x, y, color);
+		}
+	}
+}
+
+
+
+
 void lcd_test(void)
 {
 	lcd_init();
 	
-
-// 测试绘制背景色，成功
+#if 0
+        // 测试绘制背景色，成功
 	while (1)
 	{
 		lcd_draw_background(MidnightBlue);
@@ -211,6 +394,20 @@ void lcd_test(void)
                 lcd_draw_background(Fuchsia);
 		delay();
 	}
+#endif
+
+
+	// 测试画斜线
+	lcd_draw_background(DarkViolet);                // 如果没有加这一行，背景色是花花绿绿的 
+	glib_line(0, LINEVAL, HOZVAL, 0, RED);
+        draw_circular(HOZVAL/2, LINEVAL/2, 50, GREEN);
+
+
+
+	// 测试画横线、竖线
+        lcd_draw_background(DarkViolet);
+        lcd_draw_hline(HOZVAL/2 - 100, HOZVAL/2 + 100, LINEVAL/2, RED);
+        lcd_draw_vline(HOZVAL/2, LINEVAL/2 - 50, LINEVAL/2 + 50, GREEN);
 
 }
 
