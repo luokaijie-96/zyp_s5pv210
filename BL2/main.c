@@ -29,6 +29,11 @@ void led3(void)
 //void led_blink(void)
 void main(void)
 {
+	lcd_test();
+	
+	return 0;
+	
+#if 0	
 	// led初始化，也就是把GPJ0CON中设置为输出模式
 	//volatile unsigned int *p = (unsigned int *)GPJ0CON;
 	//volatile unsigned int *p1 = (unsigned int *)GPJ0DAT;
@@ -45,6 +50,7 @@ void main(void)
 		// 延时
 		delay();
 	}
+#endif	
 }
 
 

@@ -1,4 +1,4 @@
-BL2.bin: start.o  led.o
+BL2.bin: start.o  main.o  lcd.o
 	arm-linux-ld -Tlink.lds -o BL2.elf $^
 	arm-linux-objcopy -O binary BL2.elf  BL2.bin
 	arm-linux-objdump -D BL2.elf > BL2_elf.dis
