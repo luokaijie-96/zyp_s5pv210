@@ -1,4 +1,6 @@
 #include "main.h"
+#include "ascii.h"
+#include "1024600.h"
 
 #define GPF0CON			(*(volatile unsigned long *)0xE0200120)
 #define GPF1CON			(*(volatile unsigned long *)0xE0200140)
@@ -48,7 +50,6 @@
 #define YSIZE			ROW
 
 u32 *pfb = (u32 *)FB_ADDR;
-
 
 // 常用颜色定义
 #define BLACK	0x000000
@@ -376,6 +377,65 @@ void draw_circular(unsigned int centerX, unsigned int centerY, unsigned int radi
 
 
 
+// 写字
+// 写字的左上角坐标(x, y)，字的颜色是color，字的字模信息存储在data中
+static void show_8_16(unsigned int x, unsigned int y, unsigned int color, unsigned char *data)  
+{  
+    // count记录当前正在绘制的像素的次序
+    int i, j, count = 0;  
+	  
+    for (j=y; j<(y+16); j++)  
+    {  
+        for (i=x; i<(x+8); i++)  
+        {  
+            if (i<XSIZE && j<YSIZE)  
+            {  
+		    // 在坐标(i, j)这个像素处判断是0还是1，如果是1写color；如果是0直接跳过
+		    if (data[count/8] & (1<<(count%8)))   
+			    lcd_draw_pixel(i, j, color);
+            }  
+            count++;  
+        }  
+    }  
+} 
+
+// 写字符串
+// 字符串起始坐标左上角为(x, y)，字符串文字颜色是color,字符串内容为str
+void draw_ascii_ok(unsigned int x, unsigned int y, unsigned int color, unsigned char *str)
+{
+    int i;  
+    unsigned char *ch;
+    for (i=0; str[i]!='\0'; i++)  
+    {  
+	    ch = (unsigned char *)ascii_8_16[(unsigned char)str[i]-0x20];
+	    show_8_16(x, y, color, ch); 
+
+	    x += 8;
+	    if (x >= XSIZE)
+	    {
+		    x -= XSIZE;			// 回车
+		    y += 16;			// 换行
+	    }
+    }  
+}
+
+
+// 画1024x600的图，图像数据存储在pData所指向的数组中
+void lcd_draw_picture(const unsigned char *pData)
+{
+	u32 x, y, color, p = 0;
+
+	for (y=0; y<YSIZE; y++)
+	{
+		for (x=0; x<XSIZE; x++)
+		{
+			// 在这里将坐标点(x, y)的那个像素填充上相应的颜色值即可
+			color = (pData[p+0] << 0) | (pData[p+1] << 8) | (pData[p+2] << 16);
+			lcd_draw_pixel(x, y, color);
+			p += 3;
+		}
+	}
+}
 
 void lcd_test(void)
 {
@@ -397,6 +457,7 @@ void lcd_test(void)
 #endif
 
 
+#if 0	
 	// 测试画斜线
 	lcd_draw_background(DarkViolet);                // 如果没有加这一行，背景色是花花绿绿的 
 	glib_line(0, LINEVAL, HOZVAL, 0, RED);
@@ -408,6 +469,13 @@ void lcd_test(void)
         lcd_draw_background(DarkViolet);
         lcd_draw_hline(HOZVAL/2 - 100, HOZVAL/2 + 100, LINEVAL/2, RED);
         lcd_draw_vline(HOZVAL/2, LINEVAL/2 - 50, LINEVAL/2 + 50, GREEN);
+#endif
+
+	// 测试写英文字母
+	lcd_draw_background(DarkViolet);	
+	draw_ascii_ok(0, 0, RED, "ABCDabcd1234!@#$%");
+
+	lcd_draw_picture(gImage_1024600);
 
 }
 
