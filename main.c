@@ -14,10 +14,32 @@ void uart_init(void);
 #define  PWM_TIMER2       0
 #define  WDT_FUNC         0
 #define  RTC_FUNC         0
+#define  ADC_FUNC         0
+
+
+#define  PROMPT      "X210 SHELL# "
 
 int main(void)
 {
+    char buf[100] = {0};		// 用来暂存用户输入的命令
+	
+	uart_init();
+	
+	//puts("x210 simple shell:\n");
+	while(1)
+	{
+		
+		puts(PROMPT);
+		memset(buf, 0, sizeof(buf));		// buf弄干净好存储这次用户输入
+		gets(buf);							// 读取用户输入放入buf中
+		puts("your enter is: ");
+		puts(buf);
+		puts("\n");
+	}
+	
+	return 0;
 
+#if ADC_FUNC
     uart_init();
     printf("-------- adc test ---------\r\n");
     adc_test();
@@ -26,7 +48,7 @@ int main(void)
     while (1) ;
 
     return 0;
-
+#endif
 
 
 #if RTC_FUNC	

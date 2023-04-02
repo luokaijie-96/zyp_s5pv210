@@ -88,7 +88,7 @@ void uart_init(void)
 }
 
 //串口接收程序，轮询方式，接收一个字节
-void putc(char c)
+void putc(unsigned char c)
 {
     //串口发送一个字符，其实就是把一个字节丢到发送缓冲区中去
     //因为串口控制器发送 1 个字节的速度远远低于 CPU 的速度，所以 CPU 发送1个字节前必须
@@ -99,7 +99,7 @@ void putc(char c)
 }
 
 //串口接收程序，轮询方式，接收一个字节
-char getc(void)
+unsigned char getc(void)
 {
     while ((rUTRSTAT0 & BIT_LOCATION_UTRSTAT0_FUNC_RECEIVE_BUFFER_DATA_READY) != UTRSTAT0_FUNC_RECEIVE_BUFFER_DATA_READY) ;
     return  rURXH0 & 0xff;

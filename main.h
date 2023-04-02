@@ -16,6 +16,8 @@ void isr_eint16171819(void);
 
 //uart.c
 void uart_init(void);
+//void putc(char c);
+//char getc(void);
 
 //pwm.c
 void timer2_pwm_init(void);

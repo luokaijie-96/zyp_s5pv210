@@ -14,15 +14,15 @@ CFLAGS		:= -Wall -O2 -fno-builtin
 export CC LD OBJCOPY OBJDUMP AR CPPFLAGS CFLAGS
 
 
-objs := start.o led.o clock.o uart.o main.o init.o key.o pwm.o wdt.o rtc.o adc.o 
+objs := start.o led.o clock.o uart.o main.o init.o key.o pwm.o wdt.o rtc.o adc.o stdio.o
 objs += lib/libc.a
 
-rtc.bin: $(objs)
-	$(LD) -Tlink.lds -o adc.elf $^
-	$(OBJCOPY) -O binary adc.elf adc.bin
-	$(OBJDUMP) -D adc.elf > adc_elf.dis
+shell.bin: $(objs)
+	$(LD) -Tlink.lds -o shell.elf $^
+	$(OBJCOPY) -O binary shell.elf shell.bin
+	$(OBJDUMP) -D shell.elf > shell_elf.dis
 	gcc mkv210_image.c -o mkx210
-	./mkx210 adc.bin 210.bin
+	./mkx210 shell.bin 210.bin
 
 lib/libc.a:
 	cd lib;	make;	cd ..
