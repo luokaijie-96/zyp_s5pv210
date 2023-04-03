@@ -14,7 +14,8 @@ CFLAGS		:= -Wall -O2 -fno-builtin
 export CC LD OBJCOPY OBJDUMP AR CPPFLAGS CFLAGS
 
 
-objs := start.o led.o clock.o uart.o main.o init.o key.o pwm.o wdt.o rtc.o adc.o stdio.o
+objs := start.o led.o clock.o uart.o main.o init.o key.o pwm.o wdt.o rtc.o adc.o
+objs += stdio.o cmd.o
 objs += lib/libc.a
 
 shell.bin: $(objs)

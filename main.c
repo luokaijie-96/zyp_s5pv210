@@ -3,6 +3,7 @@
 #include "main.h"
 #include "wdt.h"
 #include "rtc.h"
+#include "shell.h"
 
 void uart_init(void);
 
@@ -19,25 +20,34 @@ void uart_init(void);
 
 #define  PROMPT      "X210 SHELL# "
 
+
+static void shell_init(void)
+{
+	// shell init
+	init_cmd_set();
+	uart_init();
+	puts("^o^ X210 simple shell ^o^\n");		// shell logo
+}
+
 int main(void)
 {
-    char buf[100] = {0};		// 用来暂存用户输入的命令
-	
-	uart_init();
-	
-	//puts("x210 simple shell:\n");
-	while(1)
-	{
-		
-		puts(PROMPT);
-		memset(buf, 0, sizeof(buf));		// buf弄干净好存储这次用户输入
-		gets(buf);							// 读取用户输入放入buf中
-		puts("your enter is: ");
-		puts(buf);
-		puts("\n");
-	}
-	
-	return 0;
+    char buf[MAX_LINE_LENGTH] = {0};		// 用来暂存用户输入的命令
+    
+    shell_init();
+    
+    while(1)
+    {
+    	// 第1步：命令获取
+    	puts(PROMPT);
+    	memset(buf, 0, sizeof(buf));		// buf弄干净好存储这次用户输入
+    	gets(buf);							// 读取用户输入放入buf中
+    	// 第2步：命令解析
+    	cmd_parser(buf);
+    	// 第3步：命令执行
+    	cmd_exec();
+    }
+    
+    return 0;
 
 #if ADC_FUNC
     uart_init();
