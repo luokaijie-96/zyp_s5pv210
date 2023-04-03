@@ -1,5 +1,10 @@
 #include "main.h"
 
+#define  VK_LEFT    (37)   //方向键(←)： 
+#define  VK_UP      (38)   //方向键(↑)： 
+#define  VK_RIGHT   (39)   //方向键(→)： 
+#define  VK_DOWN    (40)   //方向键(↓)： 
+
 // 从stdio输出一个字符c
 void putchar(char c)
 {
@@ -7,6 +12,9 @@ void putchar(char c)
 	// windows中按下回车键等效于"\r\n"，在linux中按下回车键等效于'\n'
 	if (c == '\n')
 		putc('\r');
+
+	if(c == VK_LEFT || c == VK_UP || c == VK_RIGHT || c == VK_DOWN)	
+	    return;
 /*	
 	if (c == '\b')
 	{
