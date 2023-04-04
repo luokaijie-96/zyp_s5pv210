@@ -14,18 +14,17 @@ int cmd_index = -1;								// 存储解析到的命令是第几个主命令
 // 命令没找到处理方法
 void do_cmd_notfound(void)
 {
-	printf("%s command is illegal, please input again\r\n", cmd[0]);
+	printf("%s Command Error!\r\n", cmd[0]);
 }
-
 
 void inline led_usage(void)
 {
-	printf("Command Error!\r\n");
-	printf("LED Usage\r\n"
+	printf("LED Usage:\r\n"
 	       "    led on\r\n"
 		   "    led off\r\n"
 		   "    led blink [counts]\r\n");
 }
+
 
 // led命令的处理方法
 void do_cmd_led(void)
@@ -60,14 +59,24 @@ void do_cmd_led(void)
 	else
 	{
 		// 如果一个都没匹配，则打印使用方法
+		do_cmd_notfound();
 		led_usage();
 	}
 }
-#if 0
+
+void inline buzzer_usage(void)
+{
+	printf("PWM Usage:\r\n"
+	       "    pwm on\r\n"
+		   "    pwm off\r\n"
+		   "    pwm freq 10000\r\n"
+		   "    pwm freq 2000\r\n"
+		   "    pwm freq 100\r\n");
+}
+
 // 蜂鸣器命令处理方法
 void do_cmd_buzzer(void)
 {
-	int flag = -1;
 	//puts("led cmd");
 	// 真正的buzzer命令的操作实现
 	// 目前支持的命令有buzzer on | buzzer off 
@@ -76,24 +85,38 @@ void do_cmd_buzzer(void)
 	{
 		// buzzer on
 		buzzer_on();
-		flag = 1;
 	}
-	if (!strcmp(cmd[1], "off"))
+	else if (!strcmp(cmd[1], "off"))
 	{
 		// buzzer off
 		buzzer_off();
-		flag = 1;
+	}
+	else if (!strcmp(cmd[1], "freq"))
+	{
+		if ((!strcmp(cmd[2], "")) || (isdigit(cmd[2])))
+		{
+			do_cmd_notfound();
+			buzzer_usage();
+		}
+		else
+		{
+			int freq = simple_strtoul(cmd[2], cmd[2] + MAX_LEN_PART, 10);
+			if (freq != 10000 && freq != 2000 && freq != 100)
+			{
+				buzzer_usage();
+			}
+			buzzer_set_freq(freq);
+		}
 	}
 	// ..... 还可以继续扩展
-	
-	if (-1 == flag)
+	else
 	{
 		// 如果一个都没匹配，则打印使用方法
-		puts("command error, try: buzzer on | buzzer off");
-		puts("\n");
+		do_cmd_notfound();
+		buzzer_usage();
 	}
 }
-#endif
+
 // lcd命令处理方法
 
 // ADC命令处理方法
@@ -179,8 +202,11 @@ void cmd_exec(void)
 			do_cmd_led();			break;
 		case 1:		// lcd
 		case 2:		// buzzer
-			//do_cmd_buzzer();		break;
+			do_cmd_buzzer();		break;
 		default:
-			do_cmd_notfound();		break;
+			do_cmd_notfound();
+			led_usage();
+			buzzer_usage();
+			break;
 	}
 }

@@ -1,7 +1,7 @@
 #define 	GPD0CON		(0xE02000A0)
 #define 	TCFG0		(0xE2500000)
 #define 	TCFG1		(0xE2500004)
-#define 	CON		(0xE2500008)
+#define 	CON		    (0xE2500008)
 #define 	TCNTB2		(0xE2500024)
 #define 	TCMPB2		(0xE2500028)
 
@@ -55,6 +55,14 @@
 #define         TCON_TIMER2_FUNC_AUTO_RELOAD_OFF            (0b0 << 15)
 #define         TCON_TIMER2_FUNC_AUTO_RELOAD_ON             (0b1 << 15)
 
+enum {
+    PWM_TRISTATE = 0,
+    PWM_OFF,
+    PWM_ON,
+    PWM_MAX
+} pwm_state_e;
+
+static unsigned int is_pwm_on = PWM_TRISTATE;
 
 //初始化 PWM Timer2，使其输出 PWM 波形: 频率是 2KHZ, duty 为 50%
 void timer2_pwm_init()
@@ -93,14 +101,98 @@ void timer2_pwm_init()
     rCON |= TCON_TIMER2_FUNC_MANUAL_UPDATE;            //打开自动刷新功能
     rCON &= ~(BIT_LOCATION_TCON_TIMER2_MANUAL_UPDATE); //关闭自动刷新功能
 
-    rCON |= (TCON_TIMER2_FUNC_START);   //开 timer2 定时器,要先把其他设置好才能开定时器
+    //rCON |= (TCON_TIMER2_FUNC_START);   //开 timer2 定时器,要先把其他设置好才能开定时器
 
-
-
-
+    is_pwm_on = PWM_TRISTATE;
+    buzzer_off();
 }
 
 
+void buzzer_on(void)
+{
+    if (is_pwm_on == PWM_ON)
+    {
+        return;
+    }
 
+    rGPD0CON &= ~(BIT_LOCATION_GPD0_2_FUNC);
+    rGPD0CON |= (GPD0_2_FUNC_TOUT2);
+
+    rCON &= ~(BIT_LOCATION_TCON_TIMER2_START_STOP);
+    rCON |= (TCON_TIMER2_FUNC_START); 
+
+    is_pwm_on = PWM_ON;
+}
+
+// 关蜂鸣器的思路：TCON中设置关，GPIO设置成其他模式
+void buzzer_off(void)
+{
+    if (is_pwm_on == PWM_OFF)
+    {
+        return;
+    }
+
+    rGPD0CON &= ~(BIT_LOCATION_GPD0_2_FUNC);
+    rGPD0CON |= (GPD0_2_FUNC_INPUT);
+
+    rCON &= ~(BIT_LOCATION_TCON_TIMER2_START_STOP);
+    rCON |= (TCON_TIMER2_FUNC_STOP); 
+
+    is_pwm_on = PWM_OFF;
+}
+
+
+void buzzer_set_freq(unsigned int freq)
+{
+    //初始时钟频率是 500KHZ
+    unsigned int state = is_pwm_on;
+
+    if (state == PWM_ON)
+    {
+        buzzer_off();
+    }
+
+    switch (freq)
+    {
+        case 2000:
+            rTCNTB2 = 250;
+            rTCMPB2 = 125;
+            break;
+        case 10000:
+            rTCNTB2 = 50;
+            rTCMPB2 = 25;
+            break;
+        case 100:
+            rTCNTB2 = 5000;
+            rTCMPB2 = 2500;
+            break;        
+        default:
+            break;
+    }
+
+    if (state == PWM_ON)
+    {
+        buzzer_on();
+    }
+
+    #if 0
+    //设置 PWM 波形为 2KHZ, 即周期是 0.5ms; 500us/2us = 250,即计数 250,就可以定时 0.5ms.
+    rTCNTB2 = 250;
+    rTCMPB2 = 125;
+
+    //设置 PWM 波形为 10KHZ, 即周期是 0.1ms; 100us/2us = 50,即计数 50,就可以定时 0.1ms.
+    rTCNTB2 = 50;
+    rTCMPB2 = 25;
+
+    //设置 PWM 波形为 100HZ, 即周期是 10ms; 10,000us/2us = 5000, 即计数 5000,就可以定时 10ms.
+    rTCNTB2 = 5000;
+    rTCMPB2 = 2500;
+    #endif
+}
+
+// 现象：引脚直接配置成输出模式，然后输出高电平，buzzer叫了。输出低电平就关了
+// 优点就是SOC不用有pwm功能，只要能输出高低电平就能控制蜂鸣器
+// 缺点是蜂鸣器的鸣叫的频率无法改动
+// 如果可以，那么开关蜂鸣器就变成了GPIO输出高低电平了。
 
 

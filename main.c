@@ -23,7 +23,7 @@ void uart_init(void);
 static void hardware_init(void)
 {
 	led_init();				// led初始化
-	//timer2_pwm_init();		// 蜂鸣器初始化
+	timer2_pwm_init();		// 蜂鸣器初始化
 }
 
 static void shell_init(void)

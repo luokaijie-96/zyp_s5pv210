@@ -28,6 +28,9 @@ unsigned char getc(void);
 
 //pwm.c
 void timer2_pwm_init(void);
+void buzzer_on(void);
+void buzzer_off(void);
+void buzzer_set_freq(unsigned int frep);
 
 
 //adc.c
