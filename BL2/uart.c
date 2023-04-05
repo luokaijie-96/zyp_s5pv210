@@ -1,3 +1,6 @@
+#include "shell.h"
+#include "main.h"
+
 #define GPA0CON		0xE0200000
 #define UCON0 		0xE2900004
 #define ULCON0 		0xE2900000
@@ -103,4 +106,20 @@ unsigned char getc(void)
 {
     while ((rUTRSTAT0 & BIT_LOCATION_UTRSTAT0_FUNC_RECEIVE_BUFFER_DATA_READY) != UTRSTAT0_FUNC_RECEIVE_BUFFER_DATA_READY) ;
     return  rURXH0 & 0xff;
+}
+
+
+// 有人按下键盘返回1，没人按键盘返回0
+int is_keyboard_press(void)
+{
+	if ((rUTRSTAT0 & (1<<0)))
+    {
+        char buf[MAX_LINE_LENGTH] = {0};		// 用来暂存用户输入的命令
+        gets(buf);                              // 处理用户按键跳过开机延时的输入，避免当作命令来处理
+        return 1;
+    }
+	else
+    {
+        return 0;
+    }
 }

@@ -29,6 +29,8 @@ void uart_init(void);
 void putc(unsigned char c);
 unsigned char getc(void);
 
+int is_keyboard_press(void);
+
 //pwm.c
 void timer2_pwm_init(void);
 void buzzer_on(void);
@@ -44,5 +46,16 @@ void adc_collect1(unsigned int counts);
 //lcd.c
 void lcd_init();
 void lcd_test(void);
+
+
+//wdt.c
+void wdt_init_interrupt(void);
+void wdt_timer_init();
+
+//stdio.c
+void putchar(char c);
+void puts(const char *p);
+char getchar(void);
+char *gets(char *p);
 
 #endif

@@ -227,7 +227,7 @@ unsigned long intc_getVICirqstatus(unsigned long ucontroller)
 //真正的中断处理程序.意思就是说这里只考虑中断处理, 不考虑保护/恢复现场
 void irq_handler(void)
 {
-    printf("irq_handler.\r\n");	
+    //printf("irq_handler.\r\n");	
     //SoC 支持很多个(在低端 CPU 例如 2440 中有30 多个,在 210中有100多个)中断
     //这么多中断 irq 在第一个阶段走的是一条路,都会进入到 irq_handler 来
     //我们在 irq_handler 中要去区分究竟是哪个中断发生了,然后再去调用该中断对应的 isr

@@ -21,6 +21,9 @@
 
 // 全局变量声明
 extern char g_cmdset[CMD_NUM][MAX_LINE_LENGTH];
+extern int g_isgo;				
+extern int g_bootdelay;	 
+
 
 // 命令解析/执行相关
 void init_cmd_set(void);
