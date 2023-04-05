@@ -16,7 +16,7 @@ void cmd_test()
 	int i = 0;
 	for(i=0; i < 5; i++)
 	{
-		printf("cmd[%d] -- %s\r\n", i, cmd[i]);
+		//printf("cmd[%d] -- %s\r\n", i, cmd[i]);
 	}
 }
 
@@ -290,6 +290,8 @@ void init_cmd_set(void)
 
 	strcpy(g_cmdset[4], printenv);
 	strcpy(g_cmdset[5], setenv);
+	strcpy(g_cmdset[6], HELP);
+	
 	
 	memset((char *)cmd, 0, sizeof(cmd));	
 }
@@ -402,12 +404,14 @@ void cmd_exec(void)
 			do_cmd_lcd();			break;
 		case 2:		// buzzer	
 			do_cmd_buzzer();		break;
-		case 3:		// buzzer	
+		case 3:		// adc	
 			do_cmd_adc();			break;
-		case 4:		// buzzer	
+		case 4:		// printenv	
 			do_cmd_printenv();		break;
-		case 5:		// buzzer	
+		case 5:		// setenv	
 			do_cmd_setenv();		break;
+		case 6:		// help	
+			print_help();		break;	
 		default:
 			do_cmd_notfound();		
 			print_help();

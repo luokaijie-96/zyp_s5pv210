@@ -14,6 +14,7 @@
 
 #define printenv			"printenv"
 #define setenv				"setenv"
+#define HELP				"help"
 
 #define CMD_NUM				30			// 当前系统定义的命令数 
 
