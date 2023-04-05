@@ -1,6 +1,6 @@
 #define  SD_START_BLOCK     (45)
 //#define  SD_BLOCK_CNT       (32)  //这里只能拷贝 16kB 的 BL2
-#define  SD_BLOCK_CNT       (8192)//(4096)   //画图象的BL2,大小为 1MB 左右,所以必须增大拷贝的扇区数
+#define  SD_BLOCK_CNT       (8192 * 2)//(4096)   //画图象的BL2,大小为 1MB 左右,所以必须增大拷贝的扇区数
 #define  DDR_START_ADDR     (0x23E00000)
 
 typedef unsigned int bool;

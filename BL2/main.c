@@ -32,6 +32,23 @@ static void hardware_init(void)
 	adc_init();				// adc初始化
 }
 
+
+
+// 全局变量初始化
+void global_init(void)
+{
+	char val[MAX_LEN_PART] = {0};
+	if (env_get("bootdelay", val))
+	{
+		printf("env bootdelay not found.\r\n");
+		return;
+	}
+    //printf("%s --- g_bootdelay %d\r\n", __func__, g_bootdelay);
+	// 字符串转数字，字符串格式的"5"转成数字格式的5赋值给g_bootdelay
+    g_bootdelay = simple_strtoul(val, (void*)0, 10);
+    //printf("%s --- g_bootdelay %d\r\n", __func__, g_bootdelay);
+}
+
 static void shell_init(void)
 {
 	// shell init
@@ -42,6 +59,13 @@ static void shell_init(void)
     hardware_init();
     g_isgo = 0;
     g_bootdelay = 3;
+
+    // 环境变量初始化
+	env_init();
+    global_init();
+
+
+    //开机倒计时
     wdt_timer_init();					// 看门狗
 }
 

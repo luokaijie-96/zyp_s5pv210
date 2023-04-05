@@ -11,12 +11,31 @@
 #define lcd					"lcd"
 #define pwm					"buzzer"
 #define adc					"adc"
+
+#define printenv			"printenv"
+#define setenv				"setenv"
+
 #define CMD_NUM				30			// 当前系统定义的命令数 
 
 // 宏定义一个命令相关信息
-#define MAX_CMD_PART		5			// 一个命令最多包含几部分			
-#define MAX_LEN_PART		20			// 命令的分部分最大长度
+#define MAX_CMD_PART		10			// 一个命令最多包含几部分			
+#define MAX_LEN_PART		256			// 命令的分部分最大长度
 
+
+
+// 结构体就是环境变量的模板，将来每一个环境变量就是这个模板的一个实例
+#define   MAX_ENV_NUM    30 
+
+// 所有环境变量
+
+
+typedef struct env
+{
+	char env_name[MAX_LEN_PART];
+	char env_val[MAX_LEN_PART];
+	int is_used;			// 标志位，0表示这个环境变量没用，1表示用了
+}env_t;
+extern env_t envset[MAX_ENV_NUM];
 
 
 // 全局变量声明
@@ -36,5 +55,10 @@ void lcd_usage(void);
 void buzzer_usage(void);
 void led_usage(void);
 
+
+// 环境变量相关
+void env_init(void);
+int env_get(const char *pEnv, char *val);
+void env_set(const char *pEnv, const char *val);
 
 #endif

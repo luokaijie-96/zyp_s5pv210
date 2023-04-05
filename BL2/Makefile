@@ -15,7 +15,7 @@ export CC LD OBJCOPY OBJDUMP AR CPPFLAGS CFLAGS
 
 
 objs := start.o led.o clock.o uart.o main.o init.o key.o pwm.o wdt.o rtc.o adc.o
-objs += stdio.o cmd.o lcd.o
+objs += stdio.o cmd.o lcd.o env.o
 objs += lib/libc.a
 
 BL2.bin: $(objs)

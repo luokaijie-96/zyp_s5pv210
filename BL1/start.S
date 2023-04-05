@@ -32,12 +32,7 @@ _start:
 	// 第4步：初始化ddr
 	bl sdram_asm_init
 
-	//第0步：开发板置锁
-    ldr r0, =0xe010e81c
-    ldr r1, [r0]
-    orr r1, r1, #0x300
-    orr r1, r1, #0x1
-    str r1, [r0]
+	
 	
 	// 第5步：重定位,从SD卡第45扇区开始，复制32个扇区内容到DDR的 0x23E0,0000
 	bl copy_bl2_2_ddr

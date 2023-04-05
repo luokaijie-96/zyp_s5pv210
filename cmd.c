@@ -25,70 +25,6 @@ void printf_separator()
 	printf("=============================>\r\n");
 }
 
-
-void print_help()
-{
-	printf_separator();
-	led_usage();
-    lcd_usage();
-    buzzer_usage();
-    adc_usage(); 
-	printenv_usage();
-	setenv_usage();
-    printf_separator();
-}
-
-
-/******************************环境变量处理函数****************************/
-void inline printenv_usage(void)
-{
-	printf("printenv   --- print all environments values.\r\n");
-}
-
-void do_cmd_printenv(void)
-{
-	int i;
-	// 先找目前有没有这个环境变量，如果有就直接改值
-	for (i=0; i<MAX_ENV_NUM; i++)
-	{
-		if (envset[i].is_used)
-		{
-			// 打印出来的环境变量格式是：bootdelay=3
-			printf("%s=%s\r\n", envset[i].env_name, envset[i].env_val);
-		}
-	}
-}
-
-
-void inline setenv_usage(void)
-{
-	printf("setenv ENV_NAME           --- delete environments values.\r\n"
-		   "setenv ENV_NAME ENV_VAL   --- set environments values.\r\n");
-}
-
-void do_cmd_setenv(void)
-{
-	// 目前支持的命令有setenv envname envval 
-	// cmd[0]里面是setenv，cmd[1]里面是envname cmd[2]里面是envval
-	if (!strcmp(cmd[1], ""))
-	{
-		// 如果cmd[1]是null，说明用户用法不对
-		do_cmd_notfound();
-		setenv_usage();
-		printf_separator();
-	}
-	else
-	{
-		env_set(cmd[1], cmd[2]);
-	}
-}
-
-void do_cmd_getenv(void)
-{
-	
-}
-
-
 // 命令没找到处理方法
 void do_cmd_notfound(void)
 {
@@ -287,9 +223,6 @@ void init_cmd_set(void)
 	strcpy(g_cmdset[1], lcd);
 	strcpy(g_cmdset[2], pwm);
 	strcpy(g_cmdset[3], adc);
-
-	strcpy(g_cmdset[4], printenv);
-	strcpy(g_cmdset[5], setenv);
 	
 	memset((char *)cmd, 0, sizeof(cmd));	
 }
@@ -298,66 +231,21 @@ void init_cmd_set(void)
 void cmdsplit(char cmd[][MAX_LEN_PART], const char *str)
 {
     int m = 0, n = 0;	// m表示二位数组第一维，n表示第二维
-	//如果是设置环境变量，需要特殊处理.
-	if (!strncmp(str, setenv, strlen(setenv)))
-	{
-		int long_string = 0;
-        while (*str != '\0')
-        {
-        	if (*str != ' ')
-        	{
-        		cmd[m][n] = *str;
-        		n++;
-        	}
-        	else
-        	{
-				if (long_string != 1)
-				{
-                    cmd[m][n] = '\0';
-        		    n = 0;
-        		    m++;
-				}
-        		
-				
-				if (m == 2)
-				{
-					long_string = 1;
-
-					while (isspace(*str))
-					{
-						str++;
-					}
-					break; //跳出循环，在下面的 while 做特殊处理.
-				}
-        	}
-        	str++;
-        }
-
-		while (*str != '\0')
-        {
-        	cmd[m][n] = *str;
-        	n++;
-        	str++;
-        }
-	}
-    else
-	{
-		while (*str != '\0')
-        {
-        	if (*str != ' ')
-        	{
-        		cmd[m][n] = *str;
-        		n++;
-        	}
-        	else
-        	{
-        		cmd[m][n] = '\0';
-        		n = 0;
-        		m++;
-        	}
-        	str++;
-        }
-	}
+    while (*str != '\0')
+    {
+    	if (*str != ' ')
+    	{
+    		cmd[m][n] = *str;
+    		n++;
+    	}
+    	else
+    	{
+    		cmd[m][n] = '\0';
+    		n = 0;
+    		m++;
+    	}
+    	str++;
+    }
     cmd[m][n] = '\0';
 }
 
@@ -404,13 +292,13 @@ void cmd_exec(void)
 			do_cmd_buzzer();		break;
 		case 3:		// buzzer	
 			do_cmd_adc();			break;
-		case 4:		// buzzer	
-			do_cmd_printenv();		break;
-		case 5:		// buzzer	
-			do_cmd_setenv();		break;
 		default:
 			do_cmd_notfound();		
-			print_help();
+			led_usage();
+			lcd_usage();
+			buzzer_usage();
+			adc_usage(); 
+			printf_separator();
 			break;
 	}
 }
