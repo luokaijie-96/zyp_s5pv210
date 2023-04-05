@@ -8,7 +8,8 @@
 // 宏定义一些标准命令的第一部分
 #define led					"led"
 #define lcd					"lcd"
-#define pwm					"pwm"
+#define pwm					"buzzer"
+#define adc					"adc"
 #define CMD_NUM				30			// 当前系统定义的命令数 
 
 // 宏定义一个命令相关信息

@@ -18,12 +18,12 @@
 static void delay(void)
 {
     volatile unsigned int i, j;
-    for (i=0; i < 4000; i++)
+    for (i=0; i < 2000; i++)
 	for (j=0; j < 1000; j++);
 }
 
 //初始化 ADC 控制器的函数
-static void adc_init()
+void adc_init()
 {
     rTSADCCON0 |= (0x1 << 16);   // resolution  set to 12bit
     rTSADCCON0 |= (0x1 << 14);   // enable clock prescaler
@@ -72,6 +72,36 @@ void adc_test(void)
 	
 	//第五步,延时一段
 	delay();
+
+    }
+}
+
+
+void adc_collect1(unsigned int counts)
+{
+	int val = 0;
+
+    //先启动一次读操作,开启 ADC 转换.注意,此次的数据是无效数据
+    val = rTSDATX0;
+
+    while(counts--)
+    {
+
+        //第一步,人为手工开启ADC 转换
+	    //rTSADCCON0 |= (0x1 << 0);  
+	    
+	    //第二步,等待ADC 转换完毕
+	    while (!(rTSADCCON0 & (0x1 << 15))) ;
+    
+    
+	    //第三步,读取ADC 的数字值
+	    //第四步,处理/显示数字值
+	    val = rTSDATX0;
+	    printf("x: bit14 = %d.\r\n", (val & (0x1 << 14)));
+	    printf("x: adc value = %d.\r\n", (val & (0xFFF << 0)));
+	    
+	    //第五步,延时一段
+	    delay();
 
     }
 }

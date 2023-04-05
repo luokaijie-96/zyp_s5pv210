@@ -34,6 +34,8 @@ void buzzer_set_freq(unsigned int frep);
 
 
 //adc.c
+void adc_init();
 void adc_test(void);
+void adc_collect1(unsigned int counts);
 
 #endif
